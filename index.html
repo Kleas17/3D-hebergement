@@ -6,7 +6,73 @@
     <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.1.1/model-viewer.min.js"></script>
     <title>Mon Modèle 3D</title>
 </head>
-<body>test
+<body>
+        <script>
+        // Génération des 60 points
+        const points = [];
+        for (let i = 0; i < 1500; i++) {
+            const point = document.createElement('div');
+            point.className = 'point';
+            document.body.appendChild(point);
+            points.push({
+                element: point,
+                x: Math.random() * window.innerWidth,
+                y: Math.random() * window.innerHeight,
+                xSpeed: Math.random() * 4 - 2, // Vitesse aléatoire entre -2 et 2
+                ySpeed: Math.random() * 4 - 2
+            });
+        }
+
+        // Écouteur d'événements pour le mouvement de la souris
+        window.addEventListener('mousemove', function(event) {
+            const mouseX = event.clientX;
+            const mouseY = event.clientY;
+            points.forEach(point => {
+                // Calcul de la distance entre la souris et le point
+                const distX = mouseX - (point.x + 10); // +10 pour se référer au centre du point
+                const distY = mouseY - (point.y + 10);
+                const distance = Math.sqrt(distX * distX + distY * distY);
+
+                // Vérifie si la distance est inférieure au rayon de repoussement
+                if (distance < 90) {
+                    // Calcul de l'angle de repoussement
+                    const angle = Math.atan2(distY, distX);
+                    // Mise à jour de la vitesse du point pour le repousser
+                    point.xSpeed = Math.cos(angle);
+                    point.ySpeed = Math.sin(angle);
+                }
+            });
+        });
+
+
+        function animate() {
+            points.forEach(point => {
+                // Mise à jour de la position
+                point.x += point.xSpeed;
+                point.y += point.ySpeed;
+
+                // Détection des collisions avec les bords de la fenêtre
+                if (point.x + 20 > window.innerWidth || point.x < 0) {
+                    point.xSpeed = -point.xSpeed; // Inverse la direction horizontale
+                }
+                if (point.y + 20 > window.innerHeight || point.y < 0) {
+                    point.ySpeed = -point.ySpeed; // Inverse la direction verticale
+                }
+
+                // Application de la position à l'élément
+                point.element.style.left = point.x + 'px';
+                point.element.style.top = point.y + 'px';
+            });
+
+            // Appel récursif de la fonction animate
+            requestAnimationFrame(animate);
+        }
+
+        // Démarrage de l'animation
+        animate();
+    </script>
+    
+    test
     <model-viewer src="teteglb.glb" camera-controls autoplay animation="autoplay" auto-rotate></model-viewer>
     <p>test 2ddddd</p>
     <model-viewer src="love.glb" camera-controls></model-viewer>
